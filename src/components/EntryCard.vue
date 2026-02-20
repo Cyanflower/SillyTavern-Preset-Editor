@@ -46,6 +46,19 @@
           <span class="toggle-slider"></span>
         </label>
       </template>
+
+      <button
+        class="btn-delete"
+        title="删除条目"
+        @click="confirmDelete = true"
+      >🗑</button>
+    </div>
+
+    <!-- 删除确认行 -->
+    <div v-if="confirmDelete" class="delete-confirm">
+      <span class="delete-confirm-text">确认删除此条目？</span>
+      <button class="btn-confirm-yes" @click="emit('delete')">删除</button>
+      <button class="btn-confirm-no" @click="confirmDelete = false">取消</button>
     </div>
 
     <!-- Settings: non-marker + non-chatHistory markers -->
@@ -141,7 +154,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import type { ParsedEntry } from '../types/preset';
 
 const props = defineProps<{
@@ -153,9 +166,11 @@ const isChatHistory = computed(() =>
   props.entry.id === 'chatHistory' || props.entry.id === 'dialogueExamples'
 );
 
+const confirmDelete = ref(false);
 
 const emit = defineEmits<{
   'update:entry': [entry: ParsedEntry];
+  'delete': [];
 }>();
 </script>
 
@@ -419,6 +434,75 @@ const emit = defineEmits<{
 .content-textarea:focus {
   outline: none;
   border-color: var(--color-accent);
+}
+
+/* Delete button */
+.btn-delete {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  cursor: pointer;
+  padding: 0.18rem 0.45rem;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-delete:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+/* Delete confirm */
+.delete-confirm {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 6px;
+}
+
+.delete-confirm-text {
+  flex: 1;
+  font-size: 0.8rem;
+  color: #ef4444;
+}
+
+.btn-confirm-yes {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.btn-confirm-yes:hover {
+  background: #dc2626;
+}
+
+.btn-confirm-no {
+  background: var(--color-border);
+  color: var(--color-text);
+  border: none;
+  border-radius: 5px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.btn-confirm-no:hover {
+  background: var(--color-surface);
 }
 
 /* Footer */

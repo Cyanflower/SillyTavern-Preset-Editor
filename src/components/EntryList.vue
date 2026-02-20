@@ -5,6 +5,7 @@
       <span class="list-stats">
         {{ enabledCount }} 启用 · {{ markerCount }} 标记
       </span>
+      <button class="btn-add" @click="addEntry" title="新增条目">＋ 新增条目</button>
     </div>
 
     <div class="list-body">
@@ -28,6 +29,7 @@
           :entry="entry"
           :index="idx"
           @update:entry="updateEntry(idx, $event)"
+          @delete="deleteEntry(idx)"
         />
       </div>
     </div>
@@ -53,6 +55,30 @@ const markerCount = computed(() => props.entries.filter(e => e.marker).length);
 function updateEntry(index: number, updated: ParsedEntry) {
   const newEntries = [...props.entries];
   newEntries[index] = updated;
+  emit('update:entries', newEntries);
+}
+
+function addEntry() {
+  const newEntry: ParsedEntry = {
+    name: '新条目',
+    id: crypto.randomUUID(),
+    role: 'system',
+    enabled: true,
+    depth: 0,
+    position: 0,
+    order: null,
+    systemPrompt: false,
+    marker: false,
+    forbidOverrides: false,
+    injectionTrigger: [],
+    content: '',
+  };
+  emit('update:entries', [...props.entries, newEntry]);
+}
+
+function deleteEntry(index: number) {
+  const newEntries = [...props.entries];
+  newEntries.splice(index, 1);
   emit('update:entries', newEntries);
 }
 
@@ -145,6 +171,26 @@ function onDragEnd() {
 .list-stats {
   font-size: 0.75rem;
   color: var(--color-text-secondary);
+}
+
+.btn-add {
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  color: var(--color-accent);
+  cursor: pointer;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-family: inherit;
+  font-weight: 600;
+  line-height: 1;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.btn-add:hover {
+  background: rgba(99, 102, 241, 0.22);
+  border-color: var(--color-accent);
 }
 
 .list-body {
