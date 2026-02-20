@@ -48,6 +48,7 @@
       </template>
 
       <button
+        v-if="!entry.marker"
         class="btn-delete"
         title="删除条目"
         @click="confirmDelete = true"

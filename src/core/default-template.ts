@@ -1,5 +1,17 @@
 import type { SillyTavernPreset } from '../types/preset';
 
+/** 需要校验存在的标准 marker 条目 */
+export const REQUIRED_MARKERS: { id: string; name: string }[] = [
+    { id: 'chatHistory',       name: 'Chat History' },
+    { id: 'dialogueExamples',  name: 'Chat Examples' },
+    { id: 'worldInfoBefore',   name: 'World Info (before)' },
+    { id: 'worldInfoAfter',    name: 'World Info (after)' },
+    { id: 'charDescription',   name: 'Char Description' },
+    { id: 'charPersonality',   name: 'Char Personality' },
+    { id: 'scenario',          name: 'Scenario' },
+    { id: 'personaDescription', name: 'Persona Description' },
+];
+
 /**
  * 创建一个基于 SillyTavern 默认预设的空白 preset
  * 采样参数默认值来自 Default.json

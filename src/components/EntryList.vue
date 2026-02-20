@@ -8,6 +8,13 @@
       <button class="btn-add" @click="addEntry" title="新增条目">＋ 新增条目</button>
     </div>
 
+    <!-- 缺失 marker 提示 -->
+    <div v-if="missingMarkers.length > 0" class="marker-warning">
+      <span class="warning-icon">⚠</span>
+      <span class="warning-text">缺少 marker：{{ missingMarkers.map(m => m.name).join('、') }}</span>
+      <button class="btn-fix-markers" @click="addMissingMarkers">自动补全</button>
+    </div>
+
     <div class="list-body">
       <div
         v-for="(entry, idx) in entries"
@@ -39,6 +46,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import type { ParsedEntry } from '../types/preset';
+import { REQUIRED_MARKERS } from '../core/default-template';
 import EntryCard from './EntryCard.vue';
 
 const props = defineProps<{
@@ -51,6 +59,29 @@ const emit = defineEmits<{
 
 const enabledCount = computed(() => props.entries.filter(e => e.enabled && !e.marker).length);
 const markerCount = computed(() => props.entries.filter(e => e.marker).length);
+
+const missingMarkers = computed(() => {
+  const existingIds = new Set(props.entries.map(e => e.id));
+  return REQUIRED_MARKERS.filter(m => !existingIds.has(m.id));
+});
+
+function addMissingMarkers() {
+  const toAdd: ParsedEntry[] = missingMarkers.value.map(m => ({
+    name: m.name,
+    id: m.id,
+    role: 'system',
+    enabled: true,
+    depth: 0,
+    position: 0,
+    order: null,
+    systemPrompt: true,
+    marker: true,
+    forbidOverrides: false,
+    injectionTrigger: [],
+    content: '',
+  }));
+  emit('update:entries', [...props.entries, ...toAdd]);
+}
 
 function updateEntry(index: number, updated: ParsedEntry) {
   const newEntries = [...props.entries];
@@ -191,6 +222,51 @@ function onDragEnd() {
 .btn-add:hover {
   background: rgba(99, 102, 241, 0.22);
   border-color: var(--color-accent);
+}
+
+/* Missing marker warning banner */
+.marker-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.7rem;
+  margin-bottom: 0.5rem;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  border-radius: 7px;
+  flex-shrink: 0;
+}
+
+.warning-icon {
+  font-size: 0.9rem;
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.warning-text {
+  flex: 1;
+  font-size: 0.75rem;
+  color: #f59e0b;
+  line-height: 1.3;
+}
+
+.btn-fix-markers {
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  color: #d97706;
+  cursor: pointer;
+  padding: 0.22rem 0.65rem;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  font-family: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-fix-markers:hover {
+  background: rgba(251, 191, 36, 0.25);
+  border-color: #f59e0b;
 }
 
 .list-body {
