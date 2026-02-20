@@ -37,6 +37,11 @@
           :value="entry.name"
           @input="emit('update:entry', { ...entry, name: ($event.target as HTMLInputElement).value })"
         />
+        <button
+          class="btn-delete"
+          title="删除条目"
+          @click="confirmDelete = true"
+        >🗑</button>
         <label class="card-toggle" :title="entry.enabled ? '已启用' : '已禁用'">
           <input
             type="checkbox"
@@ -46,13 +51,6 @@
           <span class="toggle-slider"></span>
         </label>
       </template>
-
-      <button
-        v-if="!entry.marker"
-        class="btn-delete"
-        title="删除条目"
-        @click="confirmDelete = true"
-      >🗑</button>
     </div>
 
     <!-- 删除确认行 -->
