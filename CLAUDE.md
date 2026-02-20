@@ -18,6 +18,7 @@ Vue 3 + TypeScript 的 SillyTavern Completion Preset 编辑器。核心工作流
 - 工作目录：`/data/project-antaeus/converter/`
 - 开发命令：`npm run dev`（在 converter/ 下运行）
 - 类型检查：`npx vue-tsc --noEmit`
+- 部署：GitHub Pages，自动 CI/CD（`.github/workflows/deploy.yml`），Vite `base` 按 `NODE_ENV` 切换
 
 ---
 
@@ -89,7 +90,7 @@ src/
 │   ├── merge-back.ts        # MD + 原始 JSON → 新 JSON（mergeBack）
 │   ├── diff-entries.ts      # 条目 diff（buildMergeList、applyMergeList）
 │   ├── json-import.ts       # JSON 条目提取 + 采样参数 diff（SAMPLING_KEYS 已 export）
-│   └── default-template.ts  # 默认 ST 预设模板（createDefaultPreset）
+│   └── default-template.ts  # 默认 ST 预设模板（createDefaultPreset）+ REQUIRED_MARKERS 常量
 ├── composables/
 │   └── usePresetStore.ts    # 全局状态单例（模块级 refs）
 ├── components/
@@ -153,6 +154,10 @@ mdText  →  mergeBack(mdText, originalPreset)  →  新 JSON
 - [x] 左右双向实时同步（sync guard 防循环）
 - [x] EntryCard：position 下拉（相对/聊天中），depth/order 仅 position=1 时显示
 - [x] Marker 条目：enable/disable 开关；chatHistory/dialogueExamples 外的 marker 支持 role/position/depth 设置；名称可编辑
+- [x] EntryCard header 布局：非 marker 为 `[title] [删除按钮] [开关]`，marker 为 `[title] [MARKER badge] [开关]`，开关始终最右
+- [x] EntryCard：删除按钮（非 marker 专有，点击后展开内联二次确认行，需再次确认才删除）
+- [x] EntryList：＋ 新增条目按钮（生成带随机 UUID 的默认条目，追加到列表末尾）
+- [x] EntryList：缺失标准 marker 实时提示横幅（基于 `REQUIRED_MARKERS` 计算，含「自动补全」按钮）
 
 ### 文件操作
 - [x] ➕ 新建（基于默认模板，含标准 markers，始终可见）
@@ -161,6 +166,7 @@ mdText  →  mergeBack(mdText, originalPreset)  →  新 JSON
 - [x] 📥 导入 JSON（加载后可见，两步：条目合并 + 采样参数对比）
 - [x] ⚙️ 采样参数编辑（加载后可见，独立弹窗，直接编辑当前值）
 - [x] 📤 导出 MD / 💾 导出 JSON（含 SaveDialog 命名弹窗）
+- [x] 导出 JSON 时校验标准 marker 是否完整，缺失时弹窗提示（三选项：继续导出 / 取消 / 取消并自动补全）
 
 ### 导入合并（ChangePreview）
 - [x] 全量合并列表（unchanged/modified/added/removed 四类）
