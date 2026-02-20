@@ -94,6 +94,7 @@ function onDrop(idx: number) {
   const from = dragIdx.value;
   const newEntries = [...props.entries];
   const [moved] = newEntries.splice(from, 1);
+  if (!moved) return;
 
   // Calculate correct insert position
   // After removing `from`, indices shift:

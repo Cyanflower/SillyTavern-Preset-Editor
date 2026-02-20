@@ -125,8 +125,6 @@ const fileLoaded = ref(false);
 const step = ref(1);
 const mergeItems = ref<MergeItem[]>([]);
 const samplingDiffs = ref<SamplingParamDiff[]>([]);
-let incomingPreset: SillyTavernPreset | null = null;
-
 // Reset on open
 watch(() => props.visible, (val) => {
   if (val) {
@@ -134,7 +132,6 @@ watch(() => props.visible, (val) => {
     step.value = 1;
     mergeItems.value = [];
     samplingDiffs.value = [];
-    incomingPreset = null;
   }
 });
 
@@ -149,7 +146,6 @@ function pickFile() {
     reader.onload = () => {
       try {
         const json = JSON.parse(reader.result as string) as SillyTavernPreset;
-        incomingPreset = json;
 
         // Entries diff
         const incomingEntries = jsonToEntries(json);
@@ -172,7 +168,9 @@ function pickFile() {
 
 function setParamDecision(idx: number, decision: 'keep' | 'use-new') {
   const newDiffs = [...samplingDiffs.value];
-  newDiffs[idx] = { ...newDiffs[idx], decision };
+  const current = newDiffs[idx];
+  if (!current) return;
+  newDiffs[idx] = { ...current, decision };
   samplingDiffs.value = newDiffs;
 }
 

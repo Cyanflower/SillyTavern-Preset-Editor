@@ -177,7 +177,9 @@ function toggleExpand(idx: number) {
 
 function setDecision(idx: number, decision: MergeItem['decision']) {
   const newItems = [...props.items];
-  newItems[idx] = { ...newItems[idx], decision };
+  const current = newItems[idx];
+  if (!current) return;
+  newItems[idx] = { ...current, decision };
   emit('update:items', newItems);
 }
 
@@ -196,7 +198,7 @@ function onDragStart(idx: number, event: DragEvent) {
 function onDragOver(idx: number, _event: DragEvent) {
   if (dragIdx.value === null || dragIdx.value === idx) return;
   // Don't allow dropping on removed items
-  if (props.items[idx].type === 'removed') return;
+  if (props.items[idx]?.type === 'removed') return;
   dragOverIdx.value = idx;
 }
 
@@ -204,6 +206,7 @@ function onDragEnd() {
   if (dragIdx.value !== null && dragOverIdx.value !== null && dragIdx.value !== dragOverIdx.value) {
     const newItems = [...props.items];
     const [moved] = newItems.splice(dragIdx.value, 1);
+    if (!moved) return;
     newItems.splice(dragOverIdx.value, 0, moved);
     // Clear expanded set since indices changed
     expandedSet.value = new Set();
